@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "niaarmts"
+version = "0.1.0"
+description = "Time series numerical association rule mining variants"
+authors = ["Iztok Fister Jr. <iztok@iztok-jr-fister.eu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
