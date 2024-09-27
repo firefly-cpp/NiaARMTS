@@ -6,7 +6,9 @@ authors = ["Iztok Fister Jr. <iztok@iztok-jr-fister.eu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12,<3.13"
+niapy = "^2.3.1"
+pandas = "^2.2.3"
 
 
 [build-system]
