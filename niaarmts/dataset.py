@@ -83,24 +83,23 @@ class Dataset:
         """
         Calculates the dimension of the problem based on the type of features.
 
-        - Adds 3 for each numerical attribute.
-        - Adds 2 for each categorical attribute.
+        - Adds 4 for each numerical attribute (lower and upper bound, threshold and permutation).
+        - Adds 3 for each categorical attribute (category, threshold and permutation).
         - Adds 1 if an interval (datetime) attribute is present.
         - Adds 2 if time series data (timestamp) is present.
-        - Adds 1 for cut point value
+        - Adds 1 for cut point value.
 
         :return: The calculated dimension of the problem.
         """
         dimension = 0
         numerical_features = self.get_numerical_features()
         categorical_features = self.get_categorical_features()
-        datetime_features = self.get_datetime_features()
 
         # Add to dimension based on numerical features
-        dimension += len(numerical_features) * 3
+        dimension += len(numerical_features) * 4
 
         # Add to dimension based on categorical features
-        dimension += len(categorical_features) * 2
+        dimension += len(categorical_features) * 3
 
         # Add to dimension if interval (datetime) attribute is present
         if 'interval' in self.data.columns:
@@ -123,6 +122,9 @@ class Dataset:
         features_metadata = {}
 
         for idx, column in enumerate(self.data.columns):
+            if column == 'timestamp' or column == 'interval':  # Skip the timestamp or interval column
+                continue
+
             feature_type = 'Unknown'
             col_data = self.data[column]
 
@@ -130,8 +132,6 @@ class Dataset:
                 feature_type = 'Numerical'
             elif col_data.dtype == 'object':
                 feature_type = 'Categorical'
-            elif np.issubdtype(col_data.dtype, np.datetime64):
-                feature_type = 'Datetime'
 
             # Create metadata for each feature
             features_metadata[column] = {
@@ -143,6 +143,7 @@ class Dataset:
             }
 
         return features_metadata
+
 
     def get_all_transactions(self):
         """
