@@ -45,7 +45,7 @@ class TestFeature(unittest.TestCase):
         datetime_features = feature.get_datetime_features()
         self.assertEqual(datetime_features, ['datetime_col'])
 
-    def test_get_feature_stats(self):
+    def test_get_feature_numerical_stats(self):
         """Test if feature statistics are calculated correctly for numerical columns."""
         data = pd.DataFrame({
             'num_col': [1.5, 2.3, 3.8],
@@ -59,5 +59,18 @@ class TestFeature(unittest.TestCase):
         self.assertAlmostEqual(stats['mean'], 2.533333, places=5)
         self.assertAlmostEqual(stats['std_dev'], 1.1676, places=4)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_get_feature_stats_categorical(self):
+        """Test if feature statistics are calculated correctly for categorical columns."""
+        data = pd.DataFrame({
+            'num_col': [1.5, 2.3, 3.8],
+            'cat_col': ['A', 'B', 'A']  # 2 unique categories
+        })
+        feature = Feature(data)
+        stats = feature.get_feature_stats('cat_col')
+
+        # Check that the feature is correctly identified as 'Categorical'
+        self.assertEqual(stats['type'], 'Categorical')
+        # Ensure that the number of unique categories is correctly identified
+        self.assertEqual(stats['unique_classes'], 2)
+        # Ensure that the correct categories are returned (sorted)
+        self.assertCountEqual(stats['classes'], ['A', 'B'])  # Check if categories match
