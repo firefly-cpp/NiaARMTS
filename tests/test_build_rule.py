@@ -1,4 +1,5 @@
 import unittest
+import os
 import numpy as np
 from niaarmts import Dataset
 from niaarmts.rule import build_rule, calculate_border, calculate_selected_category, feature_position
@@ -11,7 +12,7 @@ class TestBuildRule(unittest.TestCase):
         dataset = Dataset()
 
         # Load data from CSV with our test file
-        dataset.load_data_from_csv('ts.csv', timestamp_col='timestamp')
+        dataset.load_data_from_csv(os.path.join(os.path.dirname(__file__), "test_data", "ts.csv"), timestamp_col='timestamp')
 
         # Calculate the problem dimension
 
