@@ -62,7 +62,4 @@ class TestDataset(unittest.TestCase):
         dimension = dataset.calculate_problem_dimension()
 
         # Test the correct calculation of dimensions
-        self.assertEqual(dimension, 9)  # 3 for num_col, 2 for cat_col, 1 for interval, 2 for timestamp, 1 for cut point
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(dimension, 11)  # 4 for num_col, 3 for cat_col, 1 for interval, 2 for timestamp, 1 for cut point
