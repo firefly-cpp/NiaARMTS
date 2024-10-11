@@ -99,6 +99,59 @@ class TestNiaARMTS(unittest.TestCase):
         start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
         end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
 
-        support = self.niaarmts.calculate_support(self.niaarmts.transactions, self.ant, start, end)
+        support = self.niaarmts.calculate_support(self.niaarmts.transactions, self.ant, self.con, start, end)
 
-        self.assertEqual(support, 0.5)
+        self.assertEqual(support, 0.0)
+
+        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
+
+        self.assertEqual(confidence, 0.0)
+
+    def test_calculate_support_2(self):
+
+        ant = [
+            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}
+             ]
+
+        ant2 = [
+            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
+            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'},
+             ]
+
+        ant3 = [
+            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
+            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'},
+            {'feature': 'light', 'type': 'Numerical', 'border1': 13.00, 'border2': 20.8921, 'category': 'EMPTY'},
+             ]
+
+        con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.5, 'border2': 28.5, 'category': 'EMPTY'}]
+
+        con2 = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 0, 'border2': 100, 'category': 'EMPTY'}]
+
+        upper = self.solution[-2]
+        lower = self.solution[-3]
+
+        min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
+
+        start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
+        end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
+
+        support = self.niaarmts.calculate_support(self.niaarmts.transactions, ant, con, start, end)
+        support2 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant2, con, start, end)
+        support3 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant3, con, start, end)
+
+        support4 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant, con2, start, end)
+        support5 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant2, con2, start, end)
+        support6 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant3, con2, start, end)
+
+        self.assertEqual(support, 0.2) # 2 transactions out of 10
+        self.assertEqual(support2, 0.00) # 0 transactions out of 100
+        self.assertEqual(support3, 0.00) # 1 transaction out of 100
+
+        self.assertEqual(support4, 1) # 10 transactions out of 10
+        self.assertEqual(support5, 0.3) # 3 transactions out of 100
+        self.assertEqual(support6, 0.1) # 1 transaction out of 100
+
+        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
+
+        self.assertEqual(confidence, 0.01)

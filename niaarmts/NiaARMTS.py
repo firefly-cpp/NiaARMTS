@@ -142,13 +142,14 @@ class NiaARMTS(Problem):
         """
         return str(sorted([str(attr) for attr in rule]))
 
-    def calculate_support(self, df, antecedents, start=0, end=0, use_interval=False):
+    def calculate_support(self, df, antecedents, consequents, start=0, end=0, use_interval=False):
         """
-        Calculate the support for the given list of antecedents within the specified time range or interval range.
+        Calculate the support for the given list of antecedents and consequents within the specified time range or interval range.
 
         Parameters:
             df (pd.DataFrame): The dataset containing the transactions.
             antecedents (list): A list of dictionaries defining the antecedent conditions.
+            consequents (list): A list of dictionaries defining the consequent conditions.
             start (int or datetime): The start of the interval (if use_interval is True) or timestamp range.
             end (int or datetime): The end of the interval (if use_interval is True) or timestamp range.
             use_interval (bool): Whether to use 'interval' (True) or 'timestamp' (False) for filtering.
@@ -162,6 +163,9 @@ class NiaARMTS(Problem):
         else:
             df_filtered = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
 
+        # Get the number of filtered transactions
+        filtered = len(df_filtered)
+
         # Apply each antecedent condition (both categorical and numerical)
         for antecedent in antecedents:
             if antecedent['type'] == 'Categorical':
@@ -172,8 +176,19 @@ class NiaARMTS(Problem):
                     (df_filtered[antecedent['feature']] <= antecedent['border2'])
                 ]
 
-        # Support is the ratio of matching rows to total filtered rows
-        return len(df_filtered) / len(df) if len(df) > 0 else 0
+        # Apply each consequent condition (both categorical and numerical)
+        for consequent in consequents:
+            if consequent['type'] == 'Categorical':
+                df_filtered = df_filtered[df_filtered[consequent['feature']] == consequent['category']]
+            elif consequent['type'] == 'Numerical':
+                df_filtered = df_filtered[
+                    (df_filtered[consequent['feature']] >= consequent['border1']) &
+                    (df_filtered[consequent['feature']] <= consequent['border2'])
+                ]
+
+        # Support is the ratio of rows matching both antecedents and consequents to total filtered rows
+        return len(df_filtered) / filtered if len(df) > 0 else 0
+
 
     def calculate_confidence(self, df, antecedents, consequents, start, end, use_interval=False):
         """
@@ -195,6 +210,9 @@ class NiaARMTS(Problem):
             df_filtered = df[(df['interval'] >= start) & (df['interval'] <= end)]
         else:
             df_filtered = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
+
+        # Get the number of filtered transactions
+        filtered = len(df_filtered)
 
         # Apply each antecedent condition (both categorical and numerical)
         for antecedent in antecedents:
