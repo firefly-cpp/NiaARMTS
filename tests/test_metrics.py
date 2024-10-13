@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from niaarmts import Dataset
 from niaarmts.NiaARMTS import NiaARMTS
+from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric
 
 class TestNiaARMTS(unittest.TestCase):
 
@@ -54,9 +55,12 @@ class TestNiaARMTS(unittest.TestCase):
         self.ant = [
             {'feature': 'humidity', 'type': 'Numerical', 'border1': 62.5865, 'border2': 65.8921, 'category': 'EMPTY'},
             {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'sun'}
-             ]
+        ]
 
-        self.con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 29.0172, 'border2': 29.4114, 'category': 'EMPTY'}, {'feature': 'light', 'type': 'Numerical', 'border1': 9.6287, 'border2': 12.864, 'category': 'EMPTY'}]
+        self.con = [
+            {'feature': 'temperature', 'type': 'Numerical', 'border1': 29.0172, 'border2': 29.4114, 'category': 'EMPTY'},
+            {'feature': 'light', 'type': 'Numerical', 'border1': 9.6287, 'border2': 12.864, 'category': 'EMPTY'}
+        ]
 
     def test_cut_point(self):
         # Test for cut_point method
@@ -70,7 +74,7 @@ class TestNiaARMTS(unittest.TestCase):
         antecedent = self.rule[:cut]
         consequent = self.rule[cut:]
 
-        # check antecedents and consequents
+        # Check antecedents and consequents
         self.assertEqual(antecedent, self.ant)
         self.assertEqual(consequent, self.con)
 
@@ -99,30 +103,31 @@ class TestNiaARMTS(unittest.TestCase):
         start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
         end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
 
-        support = self.niaarmts.calculate_support(self.niaarmts.transactions, self.ant, self.con, start, end)
+        # Use the imported calculate_support function
+        support = calculate_support(self.niaarmts.transactions, self.ant, self.con, start, end)
 
         self.assertEqual(support, 0.0)
 
-        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
+        # Use the imported calculate_confidence function
+        confidence = calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
 
         self.assertEqual(confidence, 0.0)
 
     def test_calculate_support_2(self):
-
         ant = [
             {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}
-             ]
+        ]
 
         ant2 = [
             {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
-            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'},
-             ]
+            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'}
+        ]
 
         ant3 = [
             {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
             {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'},
-            {'feature': 'light', 'type': 'Numerical', 'border1': 13.00, 'border2': 20.8921, 'category': 'EMPTY'},
-             ]
+            {'feature': 'light', 'type': 'Numerical', 'border1': 13.00, 'border2': 20.8921, 'category': 'EMPTY'}
+        ]
 
         con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.5, 'border2': 28.5, 'category': 'EMPTY'}]
 
@@ -136,41 +141,43 @@ class TestNiaARMTS(unittest.TestCase):
         start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
         end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
 
-        support = self.niaarmts.calculate_support(self.niaarmts.transactions, ant, con, start, end)
-        support2 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant2, con, start, end)
-        support3 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant3, con, start, end)
+        # Use the imported calculate_support function
+        support = calculate_support(self.niaarmts.transactions, ant, con, start, end)
+        support2 = calculate_support(self.niaarmts.transactions, ant2, con, start, end)
+        support3 = calculate_support(self.niaarmts.transactions, ant3, con, start, end)
 
-        support4 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant, con2, start, end)
-        support5 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant2, con2, start, end)
-        support6 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant3, con2, start, end)
+        support4 = calculate_support(self.niaarmts.transactions, ant, con2, start, end)
+        support5 = calculate_support(self.niaarmts.transactions, ant2, con2, start, end)
+        support6 = calculate_support(self.niaarmts.transactions, ant3, con2, start, end)
 
-        self.assertEqual(support, 0.2) # 2 transactions out of 10
-        self.assertEqual(support2, 0.00) # 0 transactions out of 10
-        self.assertEqual(support3, 0.00) # 1 transaction out of 10
+        self.assertEqual(support, 0.2)
+        self.assertEqual(support2, 0.00)
+        self.assertEqual(support3, 0.00)
 
-        self.assertEqual(support4, 1) # 10 transactions out of 10
-        self.assertEqual(support5, 0.3) # 3 transactions out of 10
-        self.assertEqual(support6, 0.1) # 1 transaction out of 10
+        self.assertEqual(support4, 1)
+        self.assertEqual(support5, 0.3)
+        self.assertEqual(support6, 0.1)
 
-        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant, con, start, end)
-        confidence2 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant2, con, start, end)
-        confidence3 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant3, con, start, end)
+        # Use the imported calculate_confidence function
+        confidence = calculate_confidence(self.niaarmts.transactions, ant, con, start, end)
+        confidence2 = calculate_confidence(self.niaarmts.transactions, ant2, con, start, end)
+        confidence3 = calculate_confidence(self.niaarmts.transactions, ant3, con, start, end)
 
         self.assertEqual(confidence, 0.2)
         self.assertEqual(confidence2, 0.0)
         self.assertEqual(confidence3, 0.0)
 
-
-        confidence4 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant, con2, start, end)
-        confidence5 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant2, con2, start, end)
-        confidence6 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant3, con2, start, end)
+        confidence4 = calculate_confidence(self.niaarmts.transactions, ant, con2, start, end)
+        confidence5 = calculate_confidence(self.niaarmts.transactions, ant2, con2, start, end)
+        confidence6 = calculate_confidence(self.niaarmts.transactions, ant3, con2, start, end)
 
         self.assertEqual(confidence4, 1.0)
         self.assertEqual(confidence5, 1.0)
         self.assertEqual(confidence6, 1.0)
 
-        inclusion1 = self.niaarmts.calculate_inclusion_metric(self.features, ant, con2)
-        inclusion2 = self.niaarmts.calculate_inclusion_metric(self.features, ant2, con2)
+        # Use the imported calculate_inclusion_metric function
+        inclusion1 = calculate_inclusion_metric(self.features, ant, con2)
+        inclusion2 = calculate_inclusion_metric(self.features, ant2, con2)
 
         self.assertEqual(inclusion1, 0.4)
         self.assertEqual(inclusion2, 0.6)
