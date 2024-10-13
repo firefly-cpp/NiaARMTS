@@ -70,8 +70,9 @@ class NiaARMTS(Problem):
             min_interval, max_interval = self.map_to_ts(lower, upper)
 
             # Get time bounds for filtering transactions
-            start = self.transactions.loc[min_interval, 'timestamp']
-            end = self.transactions.loc[max_interval, 'timestamp']
+            # Fetching the actual timestamps from the dataset
+            start = self.transactions['timestamp'].iloc[min_interval]
+            end = self.transactions['timestamp'].iloc[max_interval]
 
         # Step 1: Build the rules using the solution and features
         rule = build_rule(solution, self.features, is_time_series=(self.interval == "false"))
@@ -84,11 +85,11 @@ class NiaARMTS(Problem):
         # Step 3: Calculate support, confidence, and other arbitrary metrics for the rules
         if len(antecedent) > 0 and len(consequent) > 0:
             # Calculate support and confidence always
-            support = self.calculate_support(self.transactions, antecedent, start, end)
+            support = self.calculate_support(self.transactions, antecedent, consequent, start, end)
             confidence = self.calculate_confidence(self.transactions, antecedent, consequent, start, end)
 
             if self.gamma > 0.0:
-                inclusion = self.calculate_inclusion_metric(antecedent, consequent)
+                inclusion = self.calculate_inclusion_metric(self.features, antecedent, consequent)
 
             # Step 4: Calculate the fitness of the rules using weights for support, confidence, and inclusion
             fitness = self.calculate_fitness(support, confidence, inclusion)
