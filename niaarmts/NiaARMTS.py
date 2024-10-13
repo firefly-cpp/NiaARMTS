@@ -219,31 +219,40 @@ class NiaARMTS(Problem):
             if antecedent['type'] == 'Categorical':
                 df_filtered = df_filtered[df_filtered[antecedent['feature']] == antecedent['category']]
             elif antecedent['type'] == 'Numerical':
-                df_filtered = df_filtered[
-                    (df_filtered[antecedent['feature']] >= antecedent['border1']) &
-                    (df_filtered[antecedent['feature']] <= antecedent['border2'])
-                ]
+                if 'border1' in antecedent and 'border2' in antecedent:
+                    df_filtered = df_filtered[
+                        (df_filtered[antecedent['feature']] >= antecedent['border1']) &
+                        (df_filtered[antecedent['feature']] <= antecedent['border2'])
+                    ]
+                else:
+                    raise ValueError("Numerical antecedent must have 'border1' and 'border2'")
 
         # Now we have the filtered data where all antecedents are true
-        antecedent_support = df_filtered
+        antecedent_support = df_filtered.copy()
 
         # Apply consequent conditions (both categorical and numerical) to the antecedent-supporting rows
         for consequent in consequents:
             if consequent['type'] == 'Categorical':
-                df_filtered = df_filtered[df_filtered[consequent['feature']] == consequent['category']]
+                antecedent_support = antecedent_support[antecedent_support[consequent['feature']] == consequent['category']]
             elif consequent['type'] == 'Numerical':
-                df_filtered = df_filtered[
-                    (df_filtered[consequent['feature']] >= consequent['border1']) &
-                    (df_filtered[consequent['feature']] <= consequent['border2'])
-                ]
+                if 'border1' in consequent and 'border2' in consequent:
+                    antecedent_support = antecedent_support[
+                        (antecedent_support[consequent['feature']] >= consequent['border1']) &
+                        (antecedent_support[consequent['feature']] <= consequent['border2'])
+                    ]
+                else:
+                    raise ValueError("Numerical consequent must have 'border1' and 'border2'")
 
         # Confidence is the ratio of rows that match both antecedents and consequents to the rows matching antecedents
-        return len(df_filtered) / len(antecedent_support) if len(antecedent_support) > 0 else 0
+        antecedent_count = len(df_filtered)
+        consequent_count = len(antecedent_support)
+        return consequent_count / antecedent_count if antecedent_count > 0 else 0.0
 
-    def calculate_inclusion_metric(self, antecedents, consequents):
+    def calculate_inclusion_metric(self, features, antecedents, consequents):
         """
         Calculate the inclusion metric, which counts the number of attributes present
-        in both the antecedent and consequent. The value is normalized between 0 and 1.
+        in both the antecedent and consequent relative to all features in the dataset.
+        The value is normalized between 0 and 1.
 
         This metric is based on the paper:
         I. Fister Jr., V. Podgorelec, I. Fister. Improved Nature-Inspired Algorithms for
@@ -258,21 +267,20 @@ class NiaARMTS(Problem):
         Returns:
             float: The inclusion metric (0 to 1).
         """
+        # Get all feature names from the dataset
+        all_dataset_features = len(features)
         # Get feature names in antecedents and consequents
         antecedent_features = {feature['feature'] for feature in antecedents}
         consequent_features = {feature['feature'] for feature in consequents}
 
-        # Find common features
-        common_features = antecedent_features.intersection(consequent_features)
+        common_features = len(consequent_features) + len(antecedent_features)
 
-        # Total unique features in antecedent and consequent
-        total_unique_features = len(antecedent_features.union(consequent_features))
+        if common_features == 0:
+            return 0.0
 
-        # Calculate inclusion metric
-        if total_unique_features == 0:
-            return 0.0  # Avoid division by zero
+        # Normalize the metric by the total number of features in the dataset
+        inclusion_metric = common_features / all_dataset_features
 
-        inclusion_metric = len(common_features) / total_unique_features
         return inclusion_metric
 
     def calculate_amplitude_metric(self, antecedents, consequents):

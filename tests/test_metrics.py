@@ -145,13 +145,32 @@ class TestNiaARMTS(unittest.TestCase):
         support6 = self.niaarmts.calculate_support(self.niaarmts.transactions, ant3, con2, start, end)
 
         self.assertEqual(support, 0.2) # 2 transactions out of 10
-        self.assertEqual(support2, 0.00) # 0 transactions out of 100
-        self.assertEqual(support3, 0.00) # 1 transaction out of 100
+        self.assertEqual(support2, 0.00) # 0 transactions out of 10
+        self.assertEqual(support3, 0.00) # 1 transaction out of 10
 
         self.assertEqual(support4, 1) # 10 transactions out of 10
-        self.assertEqual(support5, 0.3) # 3 transactions out of 100
-        self.assertEqual(support6, 0.1) # 1 transaction out of 100
+        self.assertEqual(support5, 0.3) # 3 transactions out of 10
+        self.assertEqual(support6, 0.1) # 1 transaction out of 10
 
-        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
+        confidence = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant, con, start, end)
+        confidence2 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant2, con, start, end)
+        confidence3 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant3, con, start, end)
 
-        self.assertEqual(confidence, 0.01)
+        self.assertEqual(confidence, 0.2)
+        self.assertEqual(confidence2, 0.0)
+        self.assertEqual(confidence3, 0.0)
+
+
+        confidence4 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant, con2, start, end)
+        confidence5 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant2, con2, start, end)
+        confidence6 = self.niaarmts.calculate_confidence(self.niaarmts.transactions, ant3, con2, start, end)
+
+        self.assertEqual(confidence4, 1.0)
+        self.assertEqual(confidence5, 1.0)
+        self.assertEqual(confidence6, 1.0)
+
+        inclusion1 = self.niaarmts.calculate_inclusion_metric(self.features, ant, con2)
+        inclusion2 = self.niaarmts.calculate_inclusion_metric(self.features, ant2, con2)
+
+        self.assertEqual(inclusion1, 0.4)
+        self.assertEqual(inclusion2, 0.6)
