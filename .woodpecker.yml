@@ -1,0 +1,15 @@
+pipeline:
+  install_dependencies:
+    image: python:3.11
+    commands:
+      # Poetry
+      - curl -sSL https://install.python-poetry.org | python3 -
+      # Install the project dependencies
+      - poetry install
+
+  run_tests:
+    image: python:3.11
+    commands:
+      # Run pytest
+      - poetry run pytest
+
