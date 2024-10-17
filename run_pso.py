@@ -5,7 +5,7 @@ from niaarmts.NiaARMTS import NiaARMTS
 
 # Load dataset
 dataset = Dataset()
-dataset.load_data_from_csv('ts.csv', timestamp_col='timestamp')
+dataset.load_data_from_csv('datasets/intervals.csv')
 
 # Create an instance of NiaARMTS
 niaarmts_problem = NiaARMTS(
@@ -14,7 +14,7 @@ niaarmts_problem = NiaARMTS(
     upper=1.0,  # Upper bound of solution space
     features=dataset.get_all_features_with_metadata(),  # Pass feature metadata
     transactions=dataset.get_all_transactions(),  # Dataframe containing all transactions
-    interval='false',  # Whether we're dealing with interval data (time series support)
+    interval='true',  # Whether we're dealing with interval data (time series support)
     alpha=1.0,  # Weight for support in fitness calculation
     beta=1.0,  # Weight for confidence in fitness calculation
     gamma=1.0,  # Weight for inclusion in fitness calculation
@@ -38,6 +38,10 @@ print(f"Fitness value: {best_solution[1]}")
 # Retrieve the archive of rules that had fitness > 0.0
 rule_archive = niaarmts_problem.get_rule_archive()
 
+# Check if 'interval' is set to 'true'
+is_interval = niaarmts_problem.interval == 'true'
+
+# Print archive of rules with custom labels for interval data
 print(f"\nArchive of rules with fitness > 0 (Total: {len(rule_archive)}):")
 for i, rule_entry in enumerate(rule_archive, start=1):
     print(f"\nRule {i}:")
@@ -60,8 +64,14 @@ for i, rule_entry in enumerate(rule_archive, start=1):
     print(f"Support: {rule_entry['support']:.4f}")
     print(f"Confidence: {rule_entry['confidence']:.4f}")
     print(f"Inclusion: {rule_entry['inclusion']:.4f}")
-    print(f"Start timestamp: {rule_entry['start']}")
-    print(f"End timestamp: {rule_entry['end']}")
+
+    # Conditionally print 'Start Interval' and 'End Interval' based on the interval setting
+    if is_interval:
+        print(f"Start Interval: {rule_entry['start']}")
+        print(f"End Interval: {rule_entry['end']}")
+    else:
+        print(f"Start timestamp: {rule_entry['start']}")
+        print(f"End timestamp: {rule_entry['end']}")
 
 # Save rules to CSV
 niaarmts_problem.save_rules_to_csv("rules_archive.csv")

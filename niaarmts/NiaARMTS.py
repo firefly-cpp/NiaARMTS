@@ -62,7 +62,12 @@ class NiaARMTS(Problem):
         if self.interval == 'true':
             interval = solution[-1]
             solution = np.delete(solution, -1)
-            min_interval, max_interval = self.map_to_interval(interval)
+            curr_interval = self.map_to_interval(interval)
+
+            # if we deal only with one interval start == end
+            start = curr_interval
+            end = curr_interval
+
         else:  # if time series
             upper = solution[-1]
             solution = np.delete(solution, -1)
@@ -86,11 +91,17 @@ class NiaARMTS(Problem):
         # Step 3: Calculate support, confidence, and other arbitrary metrics for the rules
         if len(antecedent) > 0 and len(consequent) > 0:
             # Calculate support and confidence always
-            support = calculate_support(self.transactions, antecedent, consequent, start, end)
-            confidence = calculate_confidence(self.transactions, antecedent, consequent, start, end)
+
+            if self.interval != "true":
+                support = calculate_support(self.transactions, antecedent, consequent, start, end)
+                confidence = calculate_confidence(self.transactions, antecedent, consequent, start, end)
+
+            else:
+                support = calculate_support(self.transactions, antecedent, consequent, start, end, use_interval=True)
+                confidence = calculate_confidence(self.transactions, antecedent, consequent, start, end, use_interval=True)
 
             if self.gamma > 0.0:
-                inclusion = calculate_inclusion_metric(self.features, antecedent, consequent)
+                    inclusion = calculate_inclusion_metric(self.features, antecedent, consequent)
 
             # Step 4: Calculate the fitness of the rules using weights for support, confidence, and inclusion
             fitness = calculate_fitness(support, confidence, inclusion)
@@ -161,9 +172,15 @@ class NiaARMTS(Problem):
         return cut
 
     def map_to_interval(self, val):
-        min_interval = self.features['interval']['min']
-        max_interval = self.features['interval']['max']
-        return min_interval, max_interval
+        min_interval = self.transactions['interval'].min()
+        max_interval = self.transactions['interval'].max()
+
+        if not 0.0 <= val <= 1.0:
+            raise ValueError("The random solution must be between 0 and 1.")
+
+        curr_interval = int(min_interval + (max_interval - min_interval) * val)
+
+        return curr_interval
 
     def map_to_ts(self, lower, upper):
         total_transactions = len(self.transactions) - 1

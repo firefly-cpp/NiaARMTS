@@ -22,8 +22,11 @@ class Dataset:
 
         if timestamp_col:
             self.timestamp_col = timestamp_col
-            # Convert timestamp column to datetime
-            self.data[timestamp_col] = pd.to_datetime(self.data[timestamp_col])
+            # Convert timestamp column to datetime (if present)
+            try:
+                self.data[timestamp_col] = pd.to_datetime(self.data[timestamp_col])
+            except (KeyError, ValueError, TypeError):
+                pass
 
         # Initialize FeatureAnalysis after data loading
         self.feature_analysis = Feature(self.data)
