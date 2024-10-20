@@ -14,12 +14,11 @@ niaarmts_problem = NiaARMTS(
     upper=1.0,  # Upper bound of solution space
     features=dataset.get_all_features_with_metadata(),  # Pass feature metadata
     transactions=dataset.get_all_transactions(),  # Dataframe containing all transactions
-    interval='true',  # Whether we're dealing with interval data (time series support)
+    interval='true',  # Whether we're dealing with interval data
     alpha=1.0,  # Weight for support in fitness calculation
     beta=1.0,  # Weight for confidence in fitness calculation
-    gamma=1.0,  # Weight for inclusion in fitness calculation
-    delta=1.0,  # Placeholder for additional metrics
-    output=None  # Where to output results (optional)
+    gamma=1.0,  # Weight for inclusion in fitness calculation # if 0.0 then inclusion metric is omitted
+    delta=1.0  # Weight for amplitude in fitness calculation # if 0.0 then amplitude metric is omitted
 )
 
 # Define the optimization task
@@ -59,11 +58,15 @@ for i, rule_entry in enumerate(rule_archive, start=1):
         for feature in rule_entry['consequent']
     ])
 
-    # Output the formatted rule with support, confidence, and inclusion
+    # Output the formatted rule with support, confidence, and inclusion and amplitude
     print(f"{antecedent_str} => {consequent_str}")
     print(f"Support: {rule_entry['support']:.4f}")
     print(f"Confidence: {rule_entry['confidence']:.4f}")
-    print(f"Inclusion: {rule_entry['inclusion']:.4f}")
+
+    if niaarmts_problem.gamma > 0.0:
+        print(f"Inclusion: {rule_entry['inclusion']:.4f}")
+    if niaarmts_problem.delta > 0.0:
+        print(f"Amplitude: {rule_entry['amplitude']:.4f}")
 
     # Conditionally print 'Start Interval' and 'End Interval' based on the interval setting
     if is_interval:

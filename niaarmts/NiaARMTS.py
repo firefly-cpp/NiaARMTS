@@ -17,8 +17,7 @@ class NiaARMTS(Problem):
         alpha,
         beta,
         gamma,
-        delta,
-        output
+        delta
     ):
         """
         Initialize instance of NiaARMTS.
@@ -32,9 +31,8 @@ class NiaARMTS(Problem):
             interval (str): 'true' if dealing with interval data, 'false' if pure time series.
             alpha (float): Weight for support in fitness function.
             beta (float): Weight for confidence in fitness function.
-            gamma (float): Weight for amplitude in fitness function.
-            delta (float): Weight for inclusion in fitness function.
-            output: Output file or method for logging the results.
+            gamma (float): Weight for inclusion in fitness function.
+            delta (float): Weight for amplitude in fitness function.
         """
         self.dim = dimension
         self.features = features
@@ -44,7 +42,6 @@ class NiaARMTS(Problem):
         self.beta = beta
         self.gamma = gamma
         self.delta = delta
-        self.output = output
 
         # Archive for storing all unique rules with fitness > 0.0
         self.rule_archive = []
@@ -100,21 +97,26 @@ class NiaARMTS(Problem):
                 support = calculate_support(self.transactions, antecedent, consequent, start, end, use_interval=True)
                 confidence = calculate_confidence(self.transactions, antecedent, consequent, start, end, use_interval=True)
 
+            inclusion = 0.0
             if self.gamma > 0.0:
-                    inclusion = calculate_inclusion_metric(self.features, antecedent, consequent)
+                inclusion = calculate_inclusion_metric(self.features, antecedent, consequent)
 
-            # Step 4: Calculate the fitness of the rules using weights for support, confidence, and inclusion
-            fitness = calculate_fitness(support, confidence, inclusion)
+            amplitude = 0.0
+            if self.delta > 0.0:
+                amplitude = calculate_amplitude_metric(self.features, antecedent, consequent)
+
+            # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion and amplitude
+            fitness = calculate_fitness(support, confidence, inclusion, amplitude)
 
             # Step 5: Store the rule if it has fitness > 0 and it's unique
             if fitness > 0:
-                self.add_rule_to_archive(rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion)
+                self.add_rule_to_archive(rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude)
 
             return fitness
         else:
             return 0.0
 
-    def add_rule_to_archive(self, full_rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion):
+    def add_rule_to_archive(self, full_rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude):
         """
         Add the rule to the archive if its fitness is greater than zero and it's not already present.
         Args:
@@ -127,11 +129,12 @@ class NiaARMTS(Problem):
             support (float): Support value for the rule.
             confidence (float): Confidence value for the rule.
             inclusion (float): Inclusion metric for the rule.
+            amplitude (float): Amplitude metric for the rule.
         """
         rule_repr = self.rule_representation(full_rule)
         # Check if the rule is already in the archive (by its string representation)
         if rule_repr not in [self.rule_representation(r['full_rule']) for r in self.rule_archive]:
-            # Add the rule, its antecedent, consequent, fitness, support, confidence, inclusion, and timestamps to the archive
+            # Add the rule, its antecedent, consequent, fitness, support, confidence, inclusion, amplitude and timestamps to the archive
             self.rule_archive.append({
                 'full_rule': full_rule,
                 'antecedent': antecedent,
@@ -140,6 +143,7 @@ class NiaARMTS(Problem):
                 'support': support,
                 'confidence': confidence,
                 'inclusion': inclusion,
+                'amplitude': amplitude,
                 'start': start,
                 'end': end
             })
@@ -218,6 +222,7 @@ class NiaARMTS(Problem):
                 'support': entry['support'],
                 'confidence': entry['confidence'],
                 'inclusion': entry['inclusion'],
+                'amplitude': entry['amplitude'],
                 'antecedent': str(entry['antecedent']),
                 'consequent': str(entry['consequent']),
                 'start_timestamp': entry['start'],
@@ -249,6 +254,7 @@ class NiaARMTS(Problem):
                 'confidence': entry['confidence'],
                 'inclusion': entry['inclusion'],
                 'antecedent': entry['antecedent'],
+                'amplitude': entry['amplitude'],
                 'consequent': entry['consequent'],
                 'start_timestamp': str(entry['start']),
                 'end_timestamp': str(entry['end'])
