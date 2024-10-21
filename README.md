@@ -1,25 +1,34 @@
-# Nature-Inspired Algorithms for Time Series Numerical Association Rule Mining
+<h1 align="center">
+    Nature-Inspired Algorithms for Time Series Numerical Association Rule Mining
+</h1>
 
-## Overview
+<p align="center">
+    <a href="#-features">✨ Features</a> •
+    <a href="#-installation">📦 Installation</a> •
+    <a href="#-basic-example">🚀 Basic example</a> •
+    <a href="#-reference-papers">📚 Reference Papers</a> •
+    <a href="#-license">🔑 License</a> •
+    <a href="#-cite-us">📄 Cite us</a>
+</p>
 
 This framework is designed for **numerical association rule mining in time series data** using **stochastic population-based nature-inspired algorithms**[^1]. It provides tools to extract association rules from time series datasets while incorporating key metrics such as **support**, **confidence**, **inclusion**, and **amplitude**. Although independent from the NiaARM framework, this software can be viewed as an extension, with additional support for time series numerical association rule mining.
 
-## Features
+## ✨ Features
 
 The current version of the framework supports two types of time series numerical association rule mining:
 
 - **Fixed Interval Time Series Numerical Association Rule Mining**
 - **Segmented Interval Time Series Numerical Association Rule Mining**
 
-## Installation
+## 📦 Installation
 
-To install NiaARMTS, use pip:
+To install `NiaARMTS` with pip, use:
 
 ```sh
 pip install niaarmts
 ```
 
-## Basic example
+## 🚀 Basic example
 
 ```python
 from niapy.algorithms.basic import ParticleSwarmAlgorithm
@@ -60,7 +69,7 @@ print(f"Best solution: {best_solution[0]}")
 print(f"Fitness value: {best_solution[1]}")
 ```
 
-## Reference Papers 📚
+## 📚 Reference Papers
 
 Ideas are based on the following research papers:
 
@@ -90,7 +99,7 @@ Ideas are based on the following research papers:
 
 [2] [arm-preprocessing: Implementation of several preprocessing techniques for Association Rule Mining (ARM)](https://github.com/firefly-cpp/arm-preprocessing)
 
-## License
+## 🔑 License
 
 This package is distributed under the MIT License. This license can be found online at <http://www.opensource.org/licenses/MIT>.
 
@@ -98,7 +107,7 @@ This package is distributed under the MIT License. This license can be found onl
 
 This framework is provided as-is, and there are no guarantees that it fits your purposes or that it is bug-free. Use it at your own risk!
 
-## Cite us
+## 📄 Cite us
 
 [^1] Fister Jr, I., Yang, X. S., Fister, I., Brest, J., & Fister, D. (2013). [A brief review of nature-inspired algorithms for optimization](https://arxiv.org/abs/1307.4186). arXiv preprint arXiv:1307.4186.
 
