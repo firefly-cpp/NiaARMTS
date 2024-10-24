@@ -47,12 +47,11 @@ niaarmts_problem = NiaARMTS(
     upper=1.0,  # Upper bound of solution space
     features=dataset.get_all_features_with_metadata(),  # Pass feature metadata
     transactions=dataset.get_all_transactions(),  # Dataframe containing all transactions
-    interval='false',  # Whether we're dealing with interval data (time series support)
+    interval='false',  # Whether we're dealing with interval data
     alpha=1.0,  # Weight for support in fitness calculation
     beta=1.0,  # Weight for confidence in fitness calculation
-    gamma=1.0,  # Weight for inclusion in fitness calculation
-    delta=1.0,  # Placeholder for additional metrics
-    output=None  # Where to output results (optional)
+    gamma=1.0,  # Weight for inclusion in fitness calculation # if 0.0 then inclusion metric is omitted
+    delta=1.0  # Weight for amplitude in fitness calculation # if 0.0 then amplitude metric is omitted
 )
 
 # Define the optimization task
