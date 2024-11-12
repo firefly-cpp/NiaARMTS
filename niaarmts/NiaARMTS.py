@@ -33,7 +33,13 @@ class NiaARMTS(Problem):
             beta (float): Weight for confidence in fitness function.
             gamma (float): Weight for inclusion in fitness function.
             delta (float): Weight for amplitude in fitness function.
+
+        Raises:
+            KeyError: Timestamp column is required when interval is set to false.
         """
+        if interval == 'false' and 'timestamp' not in transactions:
+            raise KeyError('Timestamp column is required when interval is set to false.')
+
         self.dim = dimension
         self.features = features
         self.transactions = transactions
