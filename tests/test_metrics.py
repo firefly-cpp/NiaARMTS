@@ -40,8 +40,7 @@ class TestNiaARMTS(unittest.TestCase):
             alpha=1.0,
             beta=1.0,
             gamma=1.0,
-            delta=1.0,
-            output=None
+            delta=1.0
         )
 
         # Sample rule created from build_rule
