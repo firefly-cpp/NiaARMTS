@@ -6,10 +6,12 @@ authors = ["Iztok Fister Jr. <iztok@iztok-jr-fister.eu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-niapy = "^2.3.1"
+python = ">=3.12,<3.14"
+niapy = "^2.5.2"
 pandas = "^2.2.3"
 
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
 
 [build-system]
 requires = ["poetry-core"]
