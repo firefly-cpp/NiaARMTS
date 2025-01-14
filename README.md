@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="logo" width="300" src=".github/images/NiaARMTS.png">
+</p>
+
 <h1 align="center">
     Nature-Inspired Algorithms for Time Series Numerical Association Rule Mining
 </h1>
