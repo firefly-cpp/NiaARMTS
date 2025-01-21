@@ -125,6 +125,7 @@ class NiaARMTS(Problem):
     def add_rule_to_archive(self, full_rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude):
         """
         Add the rule to the archive if its fitness is greater than zero and it's not already present.
+
         Args:
             full_rule (list): The full rule generated from the solution.
             antecedent (list): The antecedent part of the rule.

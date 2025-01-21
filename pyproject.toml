@@ -11,6 +11,11 @@ readme = "README.md"
 python = ">=3.11,<3.14"
 niapy = "^2.5.2"
 pandas = "^2.2.3"
+sphinx = {version = "^5.0", extras = ["docs"]}
+sphinx-rtd-theme = {version = "^1.0.0", extras = ["docs"]}
+
+[tool.poetry.extras]
+docs = ["Sphinx", "sphinx-rtd-theme"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
