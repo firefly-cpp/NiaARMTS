@@ -53,7 +53,7 @@ class NiaARMTS(Problem):
         self.rule_archive = []
 
         # Store the best fitness value
-        self.best_fitness = np.NINF
+        self.best_fitness = -np.inf
         super().__init__(dimension, lower, upper)
 
     # NiaPy evaluation function
