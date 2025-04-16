@@ -69,9 +69,21 @@ pso = ParticleSwarmAlgorithm(population_size=40, min_velocity=-1.0, max_velocity
 # Run the algorithm
 best_solution = pso.run(task)
 
-# Output the best solution and its fitness value
-print(f"Best solution: {best_solution[0]}")
-print(f"Fitness value: {best_solution[1]}")
+# Save discovered rules to CSV
+niaarmts_problem.save_rules_to_csv("interval_rules.csv")
+
+# Print all rules to the terminal
+print("\n=== All Identified Rules (Interval Data, Sorted by Fitness) ===")
+for idx, rule in enumerate(niaarmts_problem.get_rule_archive(), 1):
+    print(f"\nRule #{idx}:")
+    print(f"  Antecedent: {rule['antecedent']}")
+    print(f"  Consequent: {rule['consequent']}")
+    print(f"  Support: {rule['support']:.4f}")
+    print(f"  Confidence: {rule['confidence']:.4f}")
+    print(f"  Inclusion: {rule['inclusion']:.4f}")
+    print(f"  Amplitude: {rule['amplitude']:.4f}")
+    print(f"  Fitness: {rule['fitness']:.4f}")
+    print(f"  Interval: {rule['start']} (start) to {rule['end']} (end)")
 ```
 
 ### Segmented Interval Time Series Numerical Association Rule Mining example
@@ -112,6 +124,22 @@ best_solution = pso.run(task)
 # Output the best solution and its fitness value
 print(f"Best solution: {best_solution[0]}")
 print(f"Fitness value: {best_solution[1]}")
+
+# Save all discovered rules to a CSV file
+niaarmts_problem.save_rules_to_csv("discovered_rules.csv")
+
+# Print all rules to the terminal
+print("\n=== All Identified Rules (Sorted by Fitness) ===")
+for idx, rule in enumerate(niaarmts_problem.get_rule_archive(), 1):
+    print(f"\nRule #{idx}:")
+    print(f"  Antecedent: {rule['antecedent']}")
+    print(f"  Consequent: {rule['consequent']}")
+    print(f"  Support: {rule['support']:.4f}")
+    print(f"  Confidence: {rule['confidence']:.4f}")
+    print(f"  Inclusion: {rule['inclusion']:.4f}")
+    print(f"  Amplitude: {rule['amplitude']:.4f}")
+    print(f"  Fitness: {rule['fitness']:.4f}")
+    print(f"  Time window: {rule['start']} to {rule['end']}")
 ```
 
 ## 📚 Reference Papers
