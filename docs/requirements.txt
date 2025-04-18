@@ -1,4 +1,5 @@
 niapy>=2.5.2,<3.0.0
 pandas>=2.2.3,<3.0.0
 sphinx
-sphinx-rtd-theme
+sphinx-lv2-theme
+sphinxcontrib-bibtex
