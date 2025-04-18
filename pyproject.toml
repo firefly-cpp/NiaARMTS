@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "niaarmts"
-version = "0.1.5"
+version = "0.1.6"
 description = "Time series numerical association rule mining variants"
 authors = ["Iztok Fister Jr. <iztok@iztok-jr-fister.eu>"]
 homepage = "https://github.com/firefly-cpp/NiaARMTS"
@@ -13,6 +13,7 @@ niapy = "^2.5.2"
 pandas = "^2.2.3"
 sphinx = {version = "^5.0", extras = ["docs"]}
 sphinx-rtd-theme = {version = "^1.0.0", extras = ["docs"]}
+matplotlib = "^3.10.1"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-rtd-theme"]
