@@ -7,4 +7,4 @@ from niaarmts.visualization import NarmViz
 
 __all__ = ["Dataset", "Feature", "build_rule", "NiaARMTS", "calculate_support", "calculate_confidence", "calculate_inclusion_metric", "calculate_amplitude_metric", "calculate_fitness", "NarmViz"]
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
