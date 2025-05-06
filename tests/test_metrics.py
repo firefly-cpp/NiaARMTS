@@ -4,21 +4,16 @@ import pandas as pd
 import numpy as np
 from niaarmts import Dataset
 from niaarmts.NiaARMTS import NiaARMTS
-from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric
+from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric, calculate_amplitude_metric
 
 class TestNiaARMTS(unittest.TestCase):
 
     def setUp(self):
         dataset = Dataset()
-
-        # Load data from CSV with the test file
         dataset.load_data_from_csv(os.path.join(os.path.dirname(__file__), "test_data", "ts.csv"), timestamp_col='timestamp')
-
-        # Calculate the problem dimension
         dim = dataset.calculate_problem_dimension()
         self.assertEqual(dim, 22)
 
-        # Sample solution array
         self.solution = [
             0.93186346, 0.62861471, 0.34720034, 0.51736529, 0.34957089, 0.06362278,
             0.52224747, 0.31581756, 0.78154328, 0.60825901, 0.81263313, 0.4070408,
@@ -26,10 +21,8 @@ class TestNiaARMTS(unittest.TestCase):
             0.60746777, 0.13133695, 0.23055155, 0.60543971
         ]
 
-        # Get feature metadata
         self.features = dataset.get_all_features_with_metadata()
 
-        # Initialize NiaARMTS
         self.niaarmts = NiaARMTS(
             dimension=dim,
             lower=0,
@@ -43,7 +36,6 @@ class TestNiaARMTS(unittest.TestCase):
             delta=1.0
         )
 
-        # Sample rule created from build_rule
         self.rule = [
             {'feature': 'humidity', 'type': 'Numerical', 'border1': 62.5865, 'border2': 65.8921, 'category': 'EMPTY'},
             {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'sun'},
@@ -51,29 +43,18 @@ class TestNiaARMTS(unittest.TestCase):
             {'feature': 'light', 'type': 'Numerical', 'border1': 9.6287, 'border2': 12.864, 'category': 'EMPTY'}
         ]
 
-        self.ant = [
-            {'feature': 'humidity', 'type': 'Numerical', 'border1': 62.5865, 'border2': 65.8921, 'category': 'EMPTY'},
-            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'sun'}
-        ]
-
-        self.con = [
-            {'feature': 'temperature', 'type': 'Numerical', 'border1': 29.0172, 'border2': 29.4114, 'category': 'EMPTY'},
-            {'feature': 'light', 'type': 'Numerical', 'border1': 9.6287, 'border2': 12.864, 'category': 'EMPTY'}
-        ]
+        # Store ant and con once in setup for reuse
+        self.ant = self.rule[:2]
+        self.con = self.rule[2:]
 
     def test_cut_point(self):
-        # Test for cut_point method
-        num_attributes = len(self.rule)  # Number of attributes in the rule
-
-        # Calculate the cut
+        num_attributes = len(self.rule)
         cut = self.niaarmts.cut_point(0.60543971, num_attributes)
-
         self.assertEqual(cut, 2)
 
         antecedent = self.rule[:cut]
         consequent = self.rule[cut:]
 
-        # Check antecedents and consequents
         self.assertEqual(antecedent, self.ant)
         self.assertEqual(consequent, self.con)
 
@@ -93,90 +74,77 @@ class TestNiaARMTS(unittest.TestCase):
         self.assertEqual(str(end), str('2024-09-08 20:17:51'))
 
     def test_calculate_support(self):
-        # Get start and end timestamps from the solution
         upper = self.solution[-2]
         lower = self.solution[-3]
 
         min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
-
         start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
         end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
 
-        # Use the imported calculate_support function
         support = calculate_support(self.niaarmts.transactions, self.ant, self.con, start, end)
-
         self.assertEqual(support, 0.0)
 
-        # Use the imported calculate_confidence function
         confidence = calculate_confidence(self.niaarmts.transactions, self.ant, self.con, start, end)
-
         self.assertEqual(confidence, 0.0)
 
     def test_calculate_support_2(self):
-        ant = [
-            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}
-        ]
-
-        ant2 = [
-            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
-            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'}
-        ]
-
-        ant3 = [
-            {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
-            {'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'},
-            {'feature': 'light', 'type': 'Numerical', 'border1': 13.00, 'border2': 20.8921, 'category': 'EMPTY'}
-        ]
+        ant = [{'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}]
+        ant2 = ant + [{'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'}]
+        ant3 = ant2 + [{'feature': 'light', 'type': 'Numerical', 'border1': 13.00, 'border2': 20.8921, 'category': 'EMPTY'}]
 
         con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.5, 'border2': 28.5, 'category': 'EMPTY'}]
-
         con2 = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 0, 'border2': 100, 'category': 'EMPTY'}]
 
         upper = self.solution[-2]
         lower = self.solution[-3]
-
         min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
-
         start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
         end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
 
-        # Use the imported calculate_support function
-        support = calculate_support(self.niaarmts.transactions, ant, con, start, end)
-        support2 = calculate_support(self.niaarmts.transactions, ant2, con, start, end)
-        support3 = calculate_support(self.niaarmts.transactions, ant3, con, start, end)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant, con, start, end), 0.2)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant2, con, start, end), 0.0)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant3, con, start, end), 0.0)
 
-        support4 = calculate_support(self.niaarmts.transactions, ant, con2, start, end)
-        support5 = calculate_support(self.niaarmts.transactions, ant2, con2, start, end)
-        support6 = calculate_support(self.niaarmts.transactions, ant3, con2, start, end)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant, con2, start, end), 1.0)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant2, con2, start, end), 0.3)
+        self.assertEqual(calculate_support(self.niaarmts.transactions, ant3, con2, start, end), 0.1)
 
-        self.assertEqual(support, 0.2)
-        self.assertEqual(support2, 0.00)
-        self.assertEqual(support3, 0.00)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant, con, start, end), 0.2)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant2, con, start, end), 0.0)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant3, con, start, end), 0.0)
 
-        self.assertEqual(support4, 1)
-        self.assertEqual(support5, 0.3)
-        self.assertEqual(support6, 0.1)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant, con2, start, end), 1.0)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant2, con2, start, end), 1.0)
+        self.assertEqual(calculate_confidence(self.niaarmts.transactions, ant3, con2, start, end), 1.0)
 
-        # Use the imported calculate_confidence function
-        confidence = calculate_confidence(self.niaarmts.transactions, ant, con, start, end)
-        confidence2 = calculate_confidence(self.niaarmts.transactions, ant2, con, start, end)
-        confidence3 = calculate_confidence(self.niaarmts.transactions, ant3, con, start, end)
+    def test_calculate_inclusion(self):
+        con2 = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 0, 'border2': 100, 'category': 'EMPTY'}]
+        ant = [{'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}]
+        ant2 = ant + [{'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'}]
 
-        self.assertEqual(confidence, 0.2)
-        self.assertEqual(confidence2, 0.0)
-        self.assertEqual(confidence3, 0.0)
-
-        confidence4 = calculate_confidence(self.niaarmts.transactions, ant, con2, start, end)
-        confidence5 = calculate_confidence(self.niaarmts.transactions, ant2, con2, start, end)
-        confidence6 = calculate_confidence(self.niaarmts.transactions, ant3, con2, start, end)
-
-        self.assertEqual(confidence4, 1.0)
-        self.assertEqual(confidence5, 1.0)
-        self.assertEqual(confidence6, 1.0)
-
-        # Use the imported calculate_inclusion_metric function
         inclusion1 = calculate_inclusion_metric(self.features, ant, con2)
         inclusion2 = calculate_inclusion_metric(self.features, ant2, con2)
 
         self.assertEqual(inclusion1, 0.4)
         self.assertEqual(inclusion2, 0.6)
+
+
+    def test_calculate_amplitude_2(self):
+        upper = self.solution[-2]
+        lower = self.solution[-3]
+        min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
+        start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
+        end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
+
+        ant = [{'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}]
+        ant2 = ant + [{'feature': 'humidity', 'type': 'Numerical', 'border1': 59.5, 'border2': 60.5, 'category': 'EMPTY'}]
+        con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.4, 'border2': 28.5, 'category': 'EMPTY'}]
+
+        amplitude1 = calculate_amplitude_metric(self.niaarmts.transactions, self.features, ant, con, start, end, use_interval=False)
+        amplitude2 = calculate_amplitude_metric(self.niaarmts.transactions, self.features, ant2, con, start, end, use_interval=False)
+
+        self.assertEqual(amplitude1, 0.4999999999999911)
+        self.assertEqual(amplitude2, 0.5326086956521698)
+
+
+

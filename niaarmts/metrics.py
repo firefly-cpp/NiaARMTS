@@ -134,23 +134,33 @@ def calculate_inclusion_metric(features, antecedents, consequents):
     return inclusion_metric
 
 
-def calculate_amplitude_metric(features, antecedents, consequents):
+def calculate_amplitude_metric(df, features, antecedents, consequents, start=0, end=0, use_interval=False):
     """
     Calculate the amplitude metric for the given rule, based on the ranges of numerical attributes in the antecedents
-    and consequents. The amplitude metric rewards smaller ranges, indicating tighter intervals for numerical conditions.
+    and consequents, within a specified time or interval range.
 
     Args:
+        df (pd.DataFrame): The dataset containing the transactions (TRANSACTION DATABASE).
         features (dict): A dictionary of feature metadata for the dataset.
         antecedents (list): A list of dictionaries defining the antecedent conditions.
         consequents (list): A list of dictionaries defining the consequent conditions.
+        start (int or datetime): The start of the interval (if use_interval is True) or timestamp range.
+        end (int or datetime): The end of the interval (if use_interval is True) or timestamp range.
+        use_interval (bool): Whether to filter by 'interval' (True) or 'timestamp' (False) for time-based filtering.
 
     Returns:
-        float: The amplitude metric value, normalized between 0 and 1. A higher value indicates tighter numerical ranges
-        in the antecedents and consequents.
+        float: The amplitude metric value, normalized between 0 and 1.
     """
+    # Filter the dataframe based on time or interval
+    if use_interval:
+        df_filtered = df[(df['interval'] >= start) & (df['interval'] <= end)]
+    else:
+        df_filtered = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
+
     total_range = 0.0
     num_numerical_attributes = 0
 
+    print ("filtered.", df_filtered)
     # Combine antecedents and consequents
     rule_parts = antecedents + consequents
 
@@ -159,28 +169,31 @@ def calculate_amplitude_metric(features, antecedents, consequents):
             border1 = feature['border1']
             border2 = feature['border2']
 
-            # Retrieve the original feature min and max from the dataset metadata
-            feature_min = features[feature['feature']]['min']
-            feature_max = features[feature['feature']]['max']
+            feature_name = feature['feature']
+
+            # Retrieve min and max for the feature from the filtered dataframe
+            if feature_name in df_filtered.columns and not df_filtered[feature_name].empty:
+                feature_min = df_filtered[feature_name].min()
+                feature_max = df_filtered[feature_name].max()
+            else:
+                continue  # Skip if feature is missing or empty
 
             # Calculate the normalized range
             if feature_max != feature_min:
                 normalized_range = (border2 - border1) / (feature_max - feature_min)
             else:
-                normalized_range = 0.0  # If no variation in the feature, set range to 0
+                normalized_range = 0.0  # If no variation, set to 0
 
             total_range += normalized_range
             num_numerical_attributes += 1
 
-    # If there are no numerical attributes, return 0
     if num_numerical_attributes == 0:
         return 0.0
 
-    # Amplitude metric is 1 - (average normalized range), meaning smaller ranges are preferred
+    # Smaller range implies higher amplitude metric
     amplitude_metric = 1 - (total_range / num_numerical_attributes)
 
     return amplitude_metric
-
 
 def calculate_fitness(supp, conf, incl, alpha=1.0, beta=1.0, delta=1.0):
     """
