@@ -9,7 +9,7 @@
 <p align="center">
     <img alt="PyPI version" src="https://img.shields.io/pypi/v/niaarmts.svg" />
     <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/niaarmts.svg">
-    <a href="https://pepy.tech/project/gatree">
+    <a href="https://pepy.tech/project/niaarmts">
         <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/niaarmts.svg">
     </a>
     <img alt="Downloads" src="https://static.pepy.tech/badge/niaarmts">
