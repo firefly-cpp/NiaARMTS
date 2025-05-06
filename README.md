@@ -2,9 +2,33 @@
   <img alt="logo" width="300" src=".github/images/NiaARMTS.png">
 </p>
 
-<h1 align="center">
+<h2 align="center">
     Nature-Inspired Algorithms for Time Series Numerical Association Rule Mining
-</h1>
+</h2>
+
+<p align="center">
+    <img alt="PyPI version" src="https://img.shields.io/pypi/v/niaarmts.svg" />
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/niaarmts.svg">
+    <a href="https://pepy.tech/project/niaarmts">
+        <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/niaarmts.svg">
+    </a>
+    <img alt="Downloads" src="https://static.pepy.tech/badge/niaarmts">
+    <img alt="NiaARMTS" src="https://github.com/firefly-cpp/NiaARMTS/actions/workflows/test.yml/badge.svg" />
+    <img alt="Documentation status" src="https://readthedocs.org/projects/niaarmts/badge/?version=latest" />
+</p>
+
+<p align="center">
+    <img alt="Repository size" src="https://img.shields.io/github/repo-size/firefly-cpp/NiaARMTS" />
+    <img alt="License" src="https://img.shields.io/github/license/firefly-cpp/NiaARMTS.svg" />
+    <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/w/firefly-cpp/NiaARMTS.svg">
+    <a href="http://isitmaintained.com/project/firefly-cpp/NiaARMTS">
+        <img alt="Percentage of issues still open" src="http://isitmaintained.com/badge/open/firefly-cpp/NiaARMTS.svg">
+    </a>
+    <a href="http://isitmaintained.com/project/firefly-cpp/NiaARMTS">
+        <img alt="Average time to resolve an issue" src="http://isitmaintained.com/badge/resolution/firefly-cpp/NiaARMTS.svg">
+    </a>
+    <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/firefly-cpp/NiaARMTS.svg"/>
+</p>
 
 <p align="center">
     <a href="#-features">✨ Features</a> •
@@ -16,6 +40,10 @@
 </p>
 
 This framework is designed for **numerical association rule mining in time series data** using **stochastic population-based nature-inspired algorithms**[^1]. It provides tools to extract association rules from time series datasets while incorporating key metrics such as **support**, **confidence**, **inclusion**, and **amplitude**. Although independent from the NiaARM framework, this software can be viewed as an extension, with additional support for time series numerical association rule mining.
+
+* **Free software:** MIT license
+* **Python**: 3.11, 3.12
+* **Documentation**: [https://niaarmts.readthedocs.io](https://niaarmts.readthedocs.io)
 
 ## ✨ Features
 
