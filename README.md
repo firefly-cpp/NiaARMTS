@@ -41,6 +41,8 @@
 
 This framework is designed for **numerical association rule mining in time series data** using **stochastic population-based nature-inspired algorithms**[^1]. It provides tools to extract association rules from time series datasets while incorporating key metrics such as **support**, **confidence**, **inclusion**, and **amplitude**. Although independent from the NiaARM framework, this software can be viewed as an extension, with additional support for time series numerical association rule mining.
 
+[^1]: Fister Jr, I., Yang, X. S., Fister, I., Brest, J., & Fister, D. (2013). [A brief review of nature-inspired algorithms for optimization](https://arxiv.org/abs/1307.4186). arXiv preprint arXiv:1307.4186.
+
 * **Free software:** MIT license
 * **Python**: 3.11, 3.12
 * **Documentation**: [https://niaarmts.readthedocs.io](https://niaarmts.readthedocs.io)
@@ -210,6 +212,6 @@ This framework is provided as-is, and there are no guarantees that it fits your 
 
 ## 📄 Cite us
 
-[^1] Fister Jr, I., Yang, X. S., Fister, I., Brest, J., & Fister, D. (2013). [A brief review of nature-inspired algorithms for optimization](https://arxiv.org/abs/1307.4186). arXiv preprint arXiv:1307.4186.
+[1] Fister Jr, I., Yang, X. S., Fister, I., Brest, J., & Fister, D. (2013). [A brief review of nature-inspired algorithms for optimization](https://arxiv.org/abs/1307.4186). arXiv preprint arXiv:1307.4186.
 
-[^2] Iztok Fister Jr., Dušan Fister, Iztok Fister, Vili Podgorelec, Sancho Salcedo-Sanz. [Time series numerical association rule mining variants in smart agriculture](https://iztok.link/static/publications/314.pdf). Journal of Ambient Intelligence and Humanized Computing (2023): 1-14.
+[2] Iztok Fister Jr., Dušan Fister, Iztok Fister, Vili Podgorelec, Sancho Salcedo-Sanz. [Time series numerical association rule mining variants in smart agriculture](https://iztok.link/static/publications/314.pdf). Journal of Ambient Intelligence and Humanized Computing (2023): 1-14.
