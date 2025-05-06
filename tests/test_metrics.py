@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from niaarmts import Dataset
 from niaarmts.NiaARMTS import NiaARMTS
-from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric, calculate_amplitude_metric
+from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric, calculate_amplitude_metric, calculate_coverage_metric
 
 class TestNiaARMTS(unittest.TestCase):
 
@@ -147,4 +147,36 @@ class TestNiaARMTS(unittest.TestCase):
         self.assertEqual(amplitude2, 0.5326086956521698)
 
 
+    def test_calculate_coverage_antecedents(self):
+        upper = self.solution[-2]
+        lower = self.solution[-3]
+        min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
+        start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
+        end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
+
+        ant = [{'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'}]
+        ant2 = ant + [{'feature': 'humidity', 'type': 'Numerical', 'border1': 60.23, 'border2': 65.8921, 'category': 'EMPTY'}]
+
+        coverage1 = calculate_coverage_metric(self.niaarmts.transactions, ant, start, end, use_interval=False)
+        coverage2 = calculate_coverage_metric(self.niaarmts.transactions, ant2, start, end, use_interval=False)
+
+        self.assertEqual(coverage1, 1.0)
+        self.assertEqual(coverage2, 0.3)
+
+
+    def test_calculate_coverage_consequents(self):
+        upper = self.solution[-2]
+        lower = self.solution[-3]
+        min_interval, max_interval = self.niaarmts.map_to_ts(lower, upper)
+        start = self.niaarmts.transactions.loc[min_interval, 'timestamp']
+        end = self.niaarmts.transactions.loc[max_interval, 'timestamp']
+
+        con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.0, 'border2': 28.0, 'category': 'EMPTY'}]
+        con2 = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 0.0, 'border2': 100.0, 'category': 'EMPTY'}]
+
+        coverage1 = calculate_coverage_metric(self.niaarmts.transactions, con, start, end, use_interval=False)
+        coverage2 = calculate_coverage_metric(self.niaarmts.transactions, con2, start, end, use_interval=False)
+
+        self.assertEqual(coverage1, 0.0)
+        self.assertEqual(coverage2, 1.0)
 
