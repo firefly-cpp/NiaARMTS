@@ -136,8 +136,9 @@ def calculate_inclusion_metric(features, antecedents, consequents):
 
 def calculate_amplitude_metric(df, features, antecedents, consequents, start=0, end=0, use_interval=False):
     """
-    Calculate the amplitude metric for the given rule, based on the ranges of numerical attributes in the antecedents
-    and consequents, within a specified time or interval range.
+    Calculate the amplitude metric for the given rule, incorporating both numerical and categorical attributes.
+    For numerical attributes, it is based on the normalized range; for categorical, based on inverse frequency
+    in the filtered dataset.
 
     Args:
         df (pd.DataFrame): The dataset containing the transactions (TRANSACTION DATABASE).
@@ -151,47 +152,53 @@ def calculate_amplitude_metric(df, features, antecedents, consequents, start=0, 
     Returns:
         float: The amplitude metric value, normalized between 0 and 1.
     """
+
     # Filter the dataframe based on time or interval
     if use_interval:
         df_filtered = df[(df['interval'] >= start) & (df['interval'] <= end)]
     else:
         df_filtered = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
 
-    total_range = 0.0
-    num_numerical_attributes = 0
+    total_metric = 0.0
+    total_attributes = 0
 
     # Combine antecedents and consequents
     rule_parts = antecedents + consequents
 
     for feature in rule_parts:
-        if feature['type'] == 'Numerical':
+        feature_name = feature['feature']
+        feature_type = feature['type']
+
+        if feature_type == 'Numerical':
             border1 = feature['border1']
             border2 = feature['border2']
 
-            feature_name = feature['feature']
-
-            # Retrieve min and max for the feature from the filtered dataframe
             if feature_name in df_filtered.columns and not df_filtered[feature_name].empty:
                 feature_min = df_filtered[feature_name].min()
                 feature_max = df_filtered[feature_name].max()
             else:
                 continue  # Skip if feature is missing or empty
 
-            # Calculate the normalized range
             if feature_max != feature_min:
                 normalized_range = (border2 - border1) / (feature_max - feature_min)
             else:
-                normalized_range = 0.0  # If no variation, set to 0
+                normalized_range = 0.0
 
-            total_range += normalized_range
-            num_numerical_attributes += 1
+            total_metric += (1 - normalized_range)
+            total_attributes += 1
 
-    if num_numerical_attributes == 0:
+        elif feature_type == 'Categorical':
+            value = feature['category']
+            if feature_name in df_filtered.columns and not df_filtered[feature_name].empty:
+                value_count = df_filtered[feature_name].value_counts(normalize=True).get(value, 0.0)
+                inverse_frequency = 1.0 - value_count
+                total_metric += inverse_frequency
+                total_attributes += 1
+
+    if total_attributes == 0:
         return 0.0
 
-    # Smaller range implies higher amplitude metric
-    amplitude_metric = 1 - (total_range / num_numerical_attributes)
-
+    amplitude_metric = total_metric / total_attributes
     return amplitude_metric
 
 def calculate_coverage_metric(df, conditions, start=0, end=0, use_interval=False):

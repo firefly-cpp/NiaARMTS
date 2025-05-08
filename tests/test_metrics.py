@@ -128,7 +128,6 @@ class TestNiaARMTS(unittest.TestCase):
         self.assertEqual(inclusion1, 0.4)
         self.assertEqual(inclusion2, 0.6)
 
-
     def test_calculate_amplitude_2(self):
         upper = self.solution[-2]
         lower = self.solution[-3]
@@ -140,12 +139,15 @@ class TestNiaARMTS(unittest.TestCase):
         ant2 = ant + [{'feature': 'humidity', 'type': 'Numerical', 'border1': 59.5, 'border2': 60.5, 'category': 'EMPTY'}]
         con = [{'feature': 'temperature', 'type': 'Numerical', 'border1': 28.4, 'border2': 28.5, 'category': 'EMPTY'}]
 
+        ant3 = [{'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'snow'}]
+
         amplitude1 = calculate_amplitude_metric(self.niaarmts.transactions, self.features, ant, con, start, end, use_interval=False)
         amplitude2 = calculate_amplitude_metric(self.niaarmts.transactions, self.features, ant2, con, start, end, use_interval=False)
+        amplitude3 = calculate_amplitude_metric(self.niaarmts.transactions, self.features, ant3, con, start, end, use_interval=False)
 
-        self.assertEqual(amplitude1, 0.4999999999999911)
-        self.assertEqual(amplitude2, 0.5326086956521698)
-
+        self.assertEqual(amplitude1, 0.24999999999999556) # TODO - check again
+        self.assertEqual(amplitude2, 0.35507246376811324) # TODO
+        self.assertEqual(amplitude3, 0.7499999999999956) # TODO
 
     def test_calculate_coverage_antecedents(self):
         upper = self.solution[-2]
@@ -163,7 +165,6 @@ class TestNiaARMTS(unittest.TestCase):
         self.assertEqual(coverage1, 1.0)
         self.assertEqual(coverage2, 0.3)
 
-
     def test_calculate_coverage_consequents(self):
         upper = self.solution[-2]
         lower = self.solution[-3]
@@ -179,4 +180,3 @@ class TestNiaARMTS(unittest.TestCase):
 
         self.assertEqual(coverage1, 0.0)
         self.assertEqual(coverage2, 1.0)
-
