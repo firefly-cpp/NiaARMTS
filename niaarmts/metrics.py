@@ -201,41 +201,21 @@ def calculate_amplitude_metric(df, features, antecedents, consequents, start=0, 
     amplitude_metric = total_metric / total_attributes
     return amplitude_metric
 
-def calculate_coverage_metric(df, conditions, start=0, end=0, use_interval=False):
-    """
-    Calculate the coverage of a list of conditions (antecedents or consequents)
-    within a specified time or interval range.
+def calculate_coverage_metric(df, conditions, start, end, use_interval):
+    df_filtered = df[(df['interval'] >= start) & (df['interval'] <= end)] if use_interval else \
+                  df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
 
-    Args:
-        df (pd.DataFrame): Transaction database.
-        conditions (list): List of condition dicts.
-        start (int or datetime): Start time or interval.
-        end (int or datetime): End time or interval.
-        use_interval (bool): Whether to filter using 'interval' or 'timestamp'.
-
-    Returns:
-        float: Proportion of transactions that satisfy all conditions within the given window.
-    """
-    if use_interval:
-        df_filtered = df[(df['interval'] >= start) & (df['interval'] <= end)]
-    else:
-        df_filtered = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
-
-    total = len(df_filtered)
-    if total == 0:
-        return 0.0
-
-    # Apply all conditions
+    mask = np.ones(len(df_filtered), dtype=bool)
     for cond in conditions:
-        if cond['type'] == 'Categorical':
-            df_filtered = df_filtered[df_filtered[cond['feature']] == cond['category']]
-        elif cond['type'] == 'Numerical':
-            df_filtered = df_filtered[
-                (df_filtered[cond['feature']] >= cond['border1']) &
-                (df_filtered[cond['feature']] <= cond['border2'])
-            ]
+        feature = cond['feature']
+        if cond['type'].lower() == 'numerical':
+            mask &= (df_filtered[feature] >= cond['border1']) & (df_filtered[feature] <= cond['border2'])
+        elif cond['type'].lower() == 'categorical':
+            mask &= (df_filtered[feature] == cond['category'])
 
-    return len(df_filtered) / total
+    coverage = mask.sum() / len(df_filtered) if len(df_filtered) > 0 else 0.0
+    return coverage
+
 
 def calculate_fitness(supp, conf, incl, alpha=1.0, beta=1.0, delta=1.0):
     """
