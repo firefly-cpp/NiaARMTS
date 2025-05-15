@@ -165,3 +165,51 @@ cython_debug/
 # Results of association rule mining process
 rules_archive.csv
 rules_archive.json
+
+# LaTeX intermediate and log files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.brf
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.dvi
+*.pdfsync
+*.run.xml
+*.bcf
+
+# Output files
+*.pdf
+
+# MacOS-specific
+.DS_Store
+
+# Backup files
+*~
+*.bak
+*.sav
+
+# Editors
+*.swp
+*.swo
+*.tmp
+*.backup
+
+# Latexmk output directory (if used)
+latex.out/
+
+# VSCode
+.vscode/
+
+# Overleaf sync folders
+output/
