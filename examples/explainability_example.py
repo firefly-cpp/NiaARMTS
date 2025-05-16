@@ -2,12 +2,10 @@ from niaarmts.explainability import explain_rule
 from niaarmts import Dataset
 import pandas as pd
 
-# Load dataset
 dataset = Dataset()
 dataset.load_data_from_csv('datasets/ts.csv', timestamp_col='timestamp')
 transactions = dataset.get_all_transactions()
 
-# Rule definition
 antecedent = [
     {'feature': 'weather', 'type': 'Categorical', 'border1': 1.0, 'border2': 1.0, 'category': 'clouds'},
     {'feature': 'light', 'type': 'numerical', 'border1': 0.0, 'border2': 7.0, 'category': 'EMPTY'},
@@ -19,7 +17,6 @@ consequent = [
     {'feature': 'humidity', 'type': 'numerical', 'border1': 60.2, 'border2': 60.3, 'category': 'EMPTY'}
 ]
 
-# Run explanation and get LaTeX code
 results, latex_code = explain_rule(
     df=transactions,
     features=dataset.get_all_features_with_metadata(),
@@ -27,11 +24,11 @@ results, latex_code = explain_rule(
     consequent=consequent,
     start=pd.Timestamp("2024-09-08 20:16:21"),
     end=pd.Timestamp("2024-09-08 20:17:51"),
-    use_interval=False
+    use_interval=False,
+    antecedent_weights={'coverage': 0.6, 'inclusion': 0.4},  # No amplitude used
+    consequent_weights={'amplitude': 1.0}  # Only amplitude used
 )
 
-# Save LaTeX output
 with open("rule_explanation_tables.tex", "w") as f:
     f.write(latex_code)
-
 print("LaTeX table saved to 'rule_explanation_tables.tex'")
