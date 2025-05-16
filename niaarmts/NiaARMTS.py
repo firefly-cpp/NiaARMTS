@@ -84,7 +84,7 @@ class NiaARMTS(Problem):
             end = self.transactions['timestamp'].iloc[max_interval]
 
         # Step 1: Build the rules using the solution and features
-        rule = build_rule(solution, self.features, is_time_series=(self.interval == "false"))
+        rule = build_rule(solution, self.features, is_time_series=(self.interval == "false"), start=start, end=end, transactions=self.transactions)
 
         # Step 2: Split the rule into antecedents and consequents based on the cut point
         cut = self.cut_point(cut_point_val, len(rule))
