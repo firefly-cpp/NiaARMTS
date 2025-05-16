@@ -217,9 +217,9 @@ def calculate_coverage_metric(df, conditions, start, end, use_interval):
     return coverage
 
 
-def calculate_fitness(supp, conf, incl, alpha=1.0, beta=1.0, delta=1.0):
+def calculate_fitness(supp, conf, incl, ampl, alpha=1.0, beta=1.0, gamma=1.0, delta=1.0):
     """
-    Calculate the fitness score of a rule using the weighted sum of support, confidence, and inclusion.
+    Calculate the fitness score of a rule using the weighted sum of support, confidence, inclusion and amplitude.
 
     The fitness function is used to evaluate how good a particular rule is, based on its support, confidence,
     and inclusion metrics. The function allows weighting of each metric through the alpha, beta, and delta parameters.
@@ -230,9 +230,10 @@ def calculate_fitness(supp, conf, incl, alpha=1.0, beta=1.0, delta=1.0):
         incl (float): The inclusion value of the rule.
         alpha (float): Weight for the support metric.
         beta (float): Weight for the confidence metric.
-        delta (float): Weight for the inclusion metric.
+        gamma (float): Weight for the inclusion metric.
+        delta (float): Weight for the amplitude metric.
 
     Returns:
         float: The fitness score, normalized between 0 and 1.
     """
-    return ((alpha * supp) + (beta * conf) + (delta * incl)) / 3
+    return ((alpha * supp) + (beta * conf) + (gamma * incl) + (delta * ampl)) / 4
