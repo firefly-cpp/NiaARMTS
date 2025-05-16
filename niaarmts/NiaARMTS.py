@@ -109,7 +109,10 @@ class NiaARMTS(Problem):
 
             amplitude = 0.0
             if self.delta > 0.0:
-                amplitude = calculate_amplitude_metric(self.features, antecedent, consequent)
+                if self.interval != "true":
+                    amplitude = calculate_amplitude_metric(self.transactions, self.features, antecedent, consequent, start, end, use_interval=False)
+                else:
+                    amplitude = calculate_amplitude_metric(self.transactions, self.features, antecedent, consequent, start, end, use_interval=True)
 
             # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion and amplitude
             fitness = calculate_fitness(support, confidence, inclusion, amplitude)
