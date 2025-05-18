@@ -117,3 +117,55 @@ def plot_rule_stability(df, antecedent, consequent, start, end, delta=pd.Timedel
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
+
+def create_latex_table(df, antecedent, consequent, start, end, delta=pd.Timedelta(hours=6),
+                       use_interval=False, file_path="rule_stability_table.tex"):
+    """
+    Generate a LaTeX table showing support, confidence, and quality scores over three intervals (I⁻, I, I⁺),
+    and write it to a .tex file.
+
+    Args:
+        df (pd.DataFrame): The dataset.
+        antecedent (list): Antecedent of the rule.
+        consequent (list): Consequent of the rule.
+        start (pd.Timestamp): Start of the main interval.
+        end (pd.Timestamp): End of the main interval.
+        delta (pd.Timedelta): Time delta for offset intervals.
+        use_interval (bool): Whether to use 'interval' instead of 'timestamp'.
+        file_path (str): Path to save the LaTeX file.
+    """
+    start_minus, end_minus = start - delta, end - delta
+    start_plus, end_plus = start + delta, end + delta
+
+    intervals = [("I$^{-}$", start_minus, end_minus), ("I", start, end), ("I$^{+}$", start_plus, end_plus)]
+    rows = []
+
+    for label, s, e in intervals:
+        support = calculate_support(df, antecedent, consequent, s, e, use_interval)
+        confidence = calculate_confidence(df, antecedent, consequent, s, e, use_interval)
+        quality = 0.5 * (support + confidence)
+        rows.append((label, s.strftime('%Y-%m-%d %H:%M'), e.strftime('%Y-%m-%d %H:%M'), support, confidence, quality))
+
+    # Format rule in LaTeX
+    antecedent_str = ", ".join([f"\\texttt{{{item}}}" for item in antecedent])
+    consequent_str = ", ".join([f"\\texttt{{{item}}}" for item in consequent])
+    rule_latex = f"\\textbf{{Rule:}} $\\{{{antecedent_str}\\}} \\Rightarrow \\{{{consequent_str}\\}}$\n\n"
+
+    # Build LaTeX table string
+    table = "\\begin{tabular}{lccccc}\n"
+    table += "\\toprule\n"
+    table += "Interval & Start & End & Support & Confidence & Quality \\\\\n"
+    table += "\\midrule\n"
+    for label, s, e, sup, conf, qual in rows:
+        table += f"{label} & {s} & {e} & {sup:.4f} & {conf:.4f} & {qual:.4f} \\\\\n"
+    table += "\\bottomrule\n"
+    table += "\\end{tabular}\n"
+
+    # Write to file
+    with open(file_path, "w") as f:
+        f.write(rule_latex)
+        f.write("\n")
+        f.write(table)
+
+    print(f"[INFO] LaTeX rule and table written to: {file_path}")
+
