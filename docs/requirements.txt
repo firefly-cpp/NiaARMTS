@@ -1,5 +1,6 @@
 niapy>=2.5.2,<3.0.0
 pandas>=2.2.3,<3.0.0
+matplotlib
 sphinx
-sphinx-lv2-theme
+sphinx-rtd-theme
 sphinxcontrib-bibtex
