@@ -176,6 +176,13 @@ def explain_rule(
 
         for idx, part_name in enumerate(["Antecedent", "Consequent"]):
             part_data = results[part_name]
+
+            # Simple fix: invert coverage for plotting in Consequent part
+            if part_name == "Consequent" and 'coverage' in weights:
+                for x in part_data:
+                    if x['coverage'] is not None:
+                        x['coverage'] = 1 - x['coverage']
+
             weights = antecedent_weights if part_name == "Antecedent" else consequent_weights
             total_weight = sum(weights.values())
             weights = {k: v / total_weight for k, v in weights.items() if v > 0}
