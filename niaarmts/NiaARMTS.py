@@ -226,19 +226,35 @@ class NiaARMTS(Problem):
 
         # Prepare data for the CSV
         rule_data = []
-        for entry in self.rule_archive:
-            rule_info = {
-                'fitness': entry['fitness'],
-                'support': entry['support'],
-                'confidence': entry['confidence'],
-                'inclusion': entry['inclusion'],
-                'amplitude': entry['amplitude'],
-                'antecedent': str(entry['antecedent']),
-                'consequent': str(entry['consequent']),
-                'start_timestamp': entry['start'],
-                'end_timestamp': entry['end']
-            }
-            rule_data.append(rule_info)
+
+        if self.interval == 'true':
+            for entry in self.rule_archive:
+                rule_info = {
+                    'fitness': entry['fitness'],
+                    'support': entry['support'],
+                    'confidence': entry['confidence'],
+                    'inclusion': entry['inclusion'],
+                    'amplitude': entry['amplitude'],
+                    'antecedent': str(entry['antecedent']),
+                    'consequent': str(entry['consequent']),
+                    'start_interval': entry['start'],
+                    'end_interval': entry['end']
+                }
+                rule_data.append(rule_info)
+        else:
+            for entry in self.rule_archive:
+                rule_info = {
+                    'fitness': entry['fitness'],
+                    'support': entry['support'],
+                    'confidence': entry['confidence'],
+                    'inclusion': entry['inclusion'],
+                    'amplitude': entry['amplitude'],
+                    'antecedent': str(entry['antecedent']),
+                    'consequent': str(entry['consequent']),
+                    'start_timestamp': entry['start'],
+                    'end_timestamp': entry['end']
+                }
+                rule_data.append(rule_info)
 
         # Create a DataFrame and save to CSV
         df = pd.DataFrame(rule_data)
@@ -257,18 +273,32 @@ class NiaARMTS(Problem):
 
         # Prepare the archive as a JSON-friendly format
         archive_dict = {'rules': []}
-        for entry in self.rule_archive:
-            archive_dict['rules'].append({
-                'fitness': entry['fitness'],
-                'support': entry['support'],
-                'confidence': entry['confidence'],
-                'inclusion': entry['inclusion'],
-                'antecedent': entry['antecedent'],
-                'amplitude': entry['amplitude'],
-                'consequent': entry['consequent'],
-                'start_timestamp': str(entry['start']),
-                'end_timestamp': str(entry['end'])
-            })
+
+        if self.interval == 'true':
+            for entry in self.rule_archive:
+                archive_dict['rules'].append({
+                    'fitness': entry['fitness'],
+                    'support': entry['support'],
+                    'confidence': entry['confidence'],
+                    'inclusion': entry['inclusion'],
+                    'antecedent': entry['antecedent'],
+                    'amplitude': entry['amplitude'],
+                    'consequent': entry['consequent'],
+                })
+
+        else:
+            for entry in self.rule_archive:
+                archive_dict['rules'].append({
+                    'fitness': entry['fitness'],
+                    'support': entry['support'],
+                    'confidence': entry['confidence'],
+                    'inclusion': entry['inclusion'],
+                    'antecedent': entry['antecedent'],
+                    'amplitude': entry['amplitude'],
+                    'consequent': entry['consequent'],
+                    'start_timestamp': str(entry['start']),
+                    'end_timestamp': str(entry['end'])
+                })
 
         # Save to JSON
         with open(file_path, 'w') as f:
