@@ -8,4 +8,4 @@ from niaarmts.rule_stability import calculate_stability_score, plot_rule_stabili
 
 __all__ = ["Dataset", "Feature", "build_rule", "NiaARMTS", "calculate_support", "calculate_confidence", "calculate_inclusion_metric", "calculate_amplitude_metric", "calculate_fitness", "NarmViz", 'calculate_coverage_metric', 'explain_rule', 'calculate_stability_score', 'plot_rule_stability', 'create_latex_table']
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
