@@ -37,6 +37,8 @@ def build_rule(solution, features, is_time_series=False, start=None, end=None, t
     ts_filtered = None
     if is_time_series and transactions is not None and start is not None and end is not None:
         ts_filtered = transactions[(transactions['timestamp'] >= start) & (transactions['timestamp'] <= end)]
+    else: # filter according to the interval values
+        ts_filtered = transactions[(transactions['interval'] >= start) & (transactions['interval'] <= end)]
 
     # Iterate over features based on the permutation order
     for i in permutation_indices:
