@@ -118,7 +118,8 @@ class NiaARMTS(Problem):
             fitness = calculate_fitness(support, confidence, inclusion, amplitude)
 
             # Step 5: Store the rule if it has fitness > 0 and it's unique
-            if fitness > 0:
+            # Additional step: check also if support and conf > 0
+            if fitness > 0 and support > 0 and confidence > 0:
                 self.add_rule_to_archive(rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude)
 
             return fitness
