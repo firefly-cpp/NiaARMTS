@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the following publication:"
+title: "Toward Explainable Time-Series Numerical Association Rule Mining: A Case Study in Smart-Agriculture"
+authors:
+  - family-names: Fister
+    given-names: Iztok Jr.
+  - family-names: Salcedo-Sanz
+    given-names: Enrique
+  - family-names: Alexandre-Cortizo
+    given-names: Damijan
+  - family-names: Novak
+    given-names: Iztok
+  - family-names: Fister
+    given-names: Vili
+  - family-names: Podgorelec
+    given-names: Mario
+  - family-names: Gorenjak
+    given-names: Mario
+date-released: 2025-01-01
+version: "1.0.0"
+doi: "10.3390/math13132122"
+url: "https://doi.org/10.3390/math13132122"
+type: software

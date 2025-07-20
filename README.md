@@ -212,6 +212,6 @@ This framework is provided as-is, and there are no guarantees that it fits your 
 
 ## 📄 Cite us
 
-[1] Fister Jr, I., Yang, X. S., Fister, I., Brest, J., & Fister, D. (2013). [A brief review of nature-inspired algorithms for optimization](https://arxiv.org/abs/1307.4186). arXiv preprint arXiv:1307.4186.
+[1] Fister, I., Jr.; Salcedo-Sanz, S.; Alexandre-Cortizo, E.; Novak, D.; Fister, I.; Podgorelec, V.; Gorenjak, M. [Toward Explainable Time-Series Numerical Association Rule Mining: A Case Study in Smart-Agriculture](https://doi.org/10.3390/math13132122). Mathematics 2025, 13, 2122. [https://doi.org/10.3390/math13132122](https://doi.org/10.3390/math13132122) 
 
 [2] Iztok Fister Jr., Dušan Fister, Iztok Fister, Vili Podgorelec, Sancho Salcedo-Sanz. [Time series numerical association rule mining variants in smart agriculture](https://iztok.link/static/publications/314.pdf). Journal of Ambient Intelligence and Humanized Computing (2023): 1-14.
