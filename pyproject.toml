@@ -10,6 +10,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
 niapy = "^2.5.2"
+numpy = "^1.26.1"
 pandas = "^2.2.3"
 sphinx = {version = "^5.0", extras = ["docs"]}
 sphinx-rtd-theme = {version = "^1.0.0", extras = ["docs"]}

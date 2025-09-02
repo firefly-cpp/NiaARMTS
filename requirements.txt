@@ -1,2 +1,4 @@
+matplotlib
 niapy
+numpy
 pandas
