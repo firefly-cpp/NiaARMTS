@@ -216,6 +216,59 @@ def calculate_coverage_metric(df, conditions, start, end, use_interval):
     coverage = mask.sum() / len(df_filtered) if len(df_filtered) > 0 else 0.0
     return coverage
 
+def calculate_timestamp_metric(df, start, end, use_interval: bool = False):
+    """
+    Timestamp Metric (TSM)
+    ----------------------
+    TSM = 1 - (t_e - t_s) / (t_T - t_0)
+
+    Where t_s and t_e are the selected segment bounds (start and end), and t_0 and t_T are the
+    start and end of the entire time series sequence. Works for both timestamp and interval domains.
+
+    Args:
+        df (pd.DataFrame): Dataset with a "timestamp" (time-series) or "interval" (segmented) column.
+        start: Segment start (int/float for interval or pandas.Timestamp/datetime for time-series).
+        end: Segment end (same type as start).
+        use_interval (bool): If True, use the 'interval' column; otherwise use 'timestamp'.
+
+    Returns:
+        float: Value in [0, 1]; higher means a shorter segment relative to the whole time series sequence.
+    """
+    col = "interval" if use_interval else "timestamp"
+    if col not in df.columns:
+        raise KeyError(f"Column '{col}' is required in the dataframe to compute TSM.")
+
+    # Determine total series bounds
+    t0 = df[col].min()
+    tT = df[col].max()
+
+    if pd.isna(t0) or pd.isna(tT):
+        return 0.0
+
+    def span(a, b) -> float:
+        d = b - a
+        # handle timedeltas vs numeric
+        if hasattr(d, "total_seconds"):
+            return float(d.total_seconds())
+        try:
+            return float(d)
+        except Exception:
+            return float(getattr(d, "value", 0.0))  # nanoseconds
+
+    total = span(t0, tT)
+    seg = span(start, end)
+
+    if total <= 0:
+        return 0.0
+
+    # clamp seg into [0, total]
+    seg = max(0.0, min(seg, total))
+
+    tsm = 1.0 - (seg / total)
+
+    if np.isnan(tsm) or np.isinf(tsm):
+        return 0.0
+    return float(max(0.0, min(1.0, tsm)))
 
 def calculate_fitness(supp, conf, incl, ampl, alpha=1.0, beta=1.0, gamma=1.0, delta=1.0):
     """

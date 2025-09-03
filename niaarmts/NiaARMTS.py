@@ -3,7 +3,7 @@ import pandas as pd
 import json
 from niapy.problems import Problem
 from niaarmts.rule import build_rule
-from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric, calculate_amplitude_metric, calculate_fitness
+from niaarmts.metrics import calculate_support, calculate_confidence, calculate_inclusion_metric, calculate_amplitude_metric, calculate_timestamp_metric, calculate_fitness
 
 class NiaARMTS(Problem):
     def __init__(
@@ -114,19 +114,27 @@ class NiaARMTS(Problem):
                 else:
                     amplitude = calculate_amplitude_metric(self.transactions, self.features, antecedent, consequent, start, end, use_interval=True)
 
+            # Timestamp metric (TSM): relative length of the selected segment
+            tsm = 0.0
+            if self.interval != "true":
+                tsm = calculate_timestamp_metric(self.transactions, start, end, use_interval=False)
+            else:
+                tsm = calculate_timestamp_metric(self.transactions, start, end, use_interval=True)
+
+
             # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion and amplitude
             fitness = calculate_fitness(support, confidence, inclusion, amplitude)
 
             # Step 5: Store the rule if it has fitness > 0 and it's unique
             # Additional step: check also if support and conf > 0
             if fitness > 0 and support > 0 and confidence > 0:
-                self.add_rule_to_archive(rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude)
+                self.add_rule_to_archive(rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude, tsm)
 
             return fitness
         else:
             return 0.0
 
-    def add_rule_to_archive(self, full_rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude):
+    def add_rule_to_archive(self, full_rule, antecedent, consequent, fitness, start, end, support, confidence, inclusion, amplitude, tsm):
         """
         Add the rule to the archive if its fitness is greater than zero and it's not already present.
 
@@ -145,7 +153,7 @@ class NiaARMTS(Problem):
         rule_repr = self.rule_representation(full_rule)
         # Check if the rule is already in the archive (by its string representation)
         if rule_repr not in [self.rule_representation(r['full_rule']) for r in self.rule_archive]:
-            # Add the rule, its antecedent, consequent, fitness, support, confidence, inclusion, amplitude and timestamps to the archive
+            # Add the rule, its antecedent, consequent, fitness, support, confidence, inclusion, amplitude, tsm and timestamps to the archive
             self.rule_archive.append({
                 'full_rule': full_rule,
                 'antecedent': antecedent,
@@ -155,6 +163,7 @@ class NiaARMTS(Problem):
                 'confidence': confidence,
                 'inclusion': inclusion,
                 'amplitude': amplitude,
+                'tsm': tsm,
                 'start': start,
                 'end': end
             })
