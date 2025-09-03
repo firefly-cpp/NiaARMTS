@@ -37,3 +37,15 @@ def test_tsm_interval_proportional_window_intervals_csv():
     tsm = calculate_timestamp_metric(df, start, end, use_interval=True)
     assert 0.0 <= tsm <= 1.0
     assert tsm == pytest.approx(0.75, abs=1e-12)
+
+def test_custom_start_end_tsm():
+    df = pd.read_csv("datasets/september24.csv")
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+
+    t0, tT = df["timestamp"].min(), df["timestamp"].max()
+
+    start = pd.Timestamp("2024-09-17 00:59:54")
+    end = pd.Timestamp("2024-09-17 01:33:14")
+
+    tsm = calculate_timestamp_metric(df, start, end, use_interval=False)
+    assert tsm == pytest.approx(0.998638, abs=1e-4)
