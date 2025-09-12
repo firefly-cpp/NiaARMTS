@@ -5,7 +5,7 @@ from niaarmts.NiaARMTS import NiaARMTS
 
 # Load dataset
 dataset = Dataset()
-dataset.load_data_from_csv('ts.csv', timestamp_col='timestamp')
+dataset.load_data_from_csv('datasets/september24.csv', timestamp_col='timestamp')
 
 # Create an instance of NiaARMTS
 niaarmts_problem = NiaARMTS(
@@ -18,7 +18,8 @@ niaarmts_problem = NiaARMTS(
     alpha=1.0,  # Weight for support in fitness calculation
     beta=1.0,  # Weight for confidence in fitness calculation
     gamma=1.0,  # Weight for inclusion in fitness calculation # if 0.0 then inclusion metric is omitted
-    delta=1.0  # Weight for amplitude in fitness calculation # if 0.0 then amplitude metric is omitted
+    delta=1.0,  # Weight for amplitude in fitness calculation # if 0.0 then amplitude metric is omitted
+    epsilon=1.0 # Weight for timestamp metric in fitness calculation # if 0.0 then tsm is omitted
 )
 
 # Define the optimization task
@@ -47,5 +48,6 @@ for idx, rule in enumerate(niaarmts_problem.get_rule_archive(), 1):
     print(f"  Confidence: {rule['confidence']:.4f}")
     print(f"  Inclusion: {rule['inclusion']:.4f}")
     print(f"  Amplitude: {rule['amplitude']:.4f}")
+    print(f"  TSM: {rule['tsm']:.4f}")
     print(f"  Fitness: {rule['fitness']:.4f}")
     print(f"  Time window: {rule['start']} to {rule['end']}")
