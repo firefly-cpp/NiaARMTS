@@ -33,7 +33,8 @@ class TestNiaARMTS(unittest.TestCase):
             alpha=1.0,
             beta=1.0,
             gamma=1.0,
-            delta=1.0
+            delta=1.0,
+            epsilon=0.0
         )
 
         self.rule = [
