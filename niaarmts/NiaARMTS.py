@@ -17,7 +17,8 @@ class NiaARMTS(Problem):
         alpha,
         beta,
         gamma,
-        delta
+        delta,
+        epsilon
     ):
         """
         Initialize instance of NiaARMTS.
@@ -33,6 +34,7 @@ class NiaARMTS(Problem):
             beta (float): Weight for confidence in fitness function.
             gamma (float): Weight for inclusion in fitness function.
             delta (float): Weight for amplitude in fitness function.
+            epsilon (float): Weight for timestamp metric in fitness function.
 
         Raises:
             KeyError: Timestamp column is required when interval is set to false.
@@ -48,6 +50,7 @@ class NiaARMTS(Problem):
         self.beta = beta
         self.gamma = gamma
         self.delta = delta
+        self.epsilon = epsilon
 
         # Archive for storing all unique rules with fitness > 0.0
         self.rule_archive = []
@@ -122,8 +125,8 @@ class NiaARMTS(Problem):
                 tsm = calculate_timestamp_metric(self.transactions, start, end, use_interval=True)
 
 
-            # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion and amplitude
-            fitness = calculate_fitness(support, confidence, inclusion, amplitude)
+            # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion, amplitude and tsm
+            fitness = calculate_fitness(support, confidence, inclusion, amplitude, tsm)
 
             # Step 5: Store the rule if it has fitness > 0 and it's unique
             # Additional step: check also if support and conf > 0
@@ -149,6 +152,7 @@ class NiaARMTS(Problem):
             confidence (float): Confidence value for the rule.
             inclusion (float): Inclusion metric for the rule.
             amplitude (float): Amplitude metric for the rule.
+            tsm (float): Timestamp metric for the rule.
         """
         rule_repr = self.rule_representation(full_rule)
         # Check if the rule is already in the archive (by its string representation)
@@ -245,6 +249,7 @@ class NiaARMTS(Problem):
                     'confidence': entry['confidence'],
                     'inclusion': entry['inclusion'],
                     'amplitude': entry['amplitude'],
+                    'tsm': entry['tsm'],
                     'antecedent': str(entry['antecedent']),
                     'consequent': str(entry['consequent']),
                     'start_interval': entry['start'],
@@ -259,6 +264,7 @@ class NiaARMTS(Problem):
                     'confidence': entry['confidence'],
                     'inclusion': entry['inclusion'],
                     'amplitude': entry['amplitude'],
+                    'tsm': entry['tsm'],
                     'antecedent': str(entry['antecedent']),
                     'consequent': str(entry['consequent']),
                     'start_timestamp': entry['start'],
@@ -293,6 +299,7 @@ class NiaARMTS(Problem):
                     'inclusion': entry['inclusion'],
                     'antecedent': entry['antecedent'],
                     'amplitude': entry['amplitude'],
+                    'tsm': entry['tsm'],
                     'consequent': entry['consequent'],
                 })
 
@@ -305,6 +312,7 @@ class NiaARMTS(Problem):
                     'inclusion': entry['inclusion'],
                     'antecedent': entry['antecedent'],
                     'amplitude': entry['amplitude'],
+                    'tsm': entry['tsm'],
                     'consequent': entry['consequent'],
                     'start_timestamp': str(entry['start']),
                     'end_timestamp': str(entry['end'])
