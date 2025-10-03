@@ -126,7 +126,7 @@ class NiaARMTS(Problem):
 
 
             # Step 4: Calculate the fitness of the rules using weights for support, confidence, inclusion, amplitude and tsm
-            fitness = calculate_fitness(support, confidence, inclusion, amplitude, tsm)
+            fitness = calculate_fitness(support, confidence, inclusion, amplitude, tsm, self.alpha, self.beta, self.gamma, self.delta, self.epsilon)
 
             # Step 5: Store the rule if it has fitness > 0 and it's unique
             # Additional step: check also if support and conf > 0

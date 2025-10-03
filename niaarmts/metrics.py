@@ -270,7 +270,7 @@ def calculate_timestamp_metric(df, start, end, use_interval: bool = False):
         return 0.0
     return float(max(0.0, min(1.0, tsm)))
 
-def calculate_fitness(supp, conf, incl, ampl, alpha=1.0, beta=1.0, gamma=1.0, delta=1.0):
+def calculate_fitness(supp, conf, incl, ampl, tsm, alpha=1.0, beta=1.0, gamma=1.0, delta=1.0, epsilon=1.0):
     """
     Calculate the fitness score of a rule using the weighted sum of support, confidence, inclusion and amplitude.
 
@@ -285,8 +285,9 @@ def calculate_fitness(supp, conf, incl, ampl, alpha=1.0, beta=1.0, gamma=1.0, de
         beta (float): Weight for the confidence metric.
         gamma (float): Weight for the inclusion metric.
         delta (float): Weight for the amplitude metric.
+        epsilon (float): Weight for the timestamp metric.
 
     Returns:
         float: The fitness score, normalized between 0 and 1.
     """
-    return ((alpha * supp) + (beta * conf) + (gamma * incl) + (delta * ampl)) / 4
+    return ((alpha * supp) + (beta * conf) + (gamma * incl) + (delta * ampl) + (epsilon * tsm)) / 5
