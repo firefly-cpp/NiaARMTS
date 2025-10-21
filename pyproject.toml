@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "niaarmts"
-version = "0.2.5"
+version = "0.2.6"
 description = "Time series numerical association rule mining variants"
 authors = ["Iztok Fister Jr. <iztok@iztok-jr-fister.eu>"]
 homepage = "https://github.com/firefly-cpp/NiaARMTS"
